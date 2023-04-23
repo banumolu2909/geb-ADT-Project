@@ -1,10 +1,10 @@
 {
-	"folders": [
-		{
-			"path": "backend"
-		},
-		{
-			"path": "client"
-		}
-	]
+    "folders": [
+        {
+            "path": "backend"
+        },
+        {
+            "path": "client"
+        }
+    ]
 }
