@@ -30,8 +30,12 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-const pages = ['Create Order'];
-const settings = ['Logout'];
+import { FaPencilAlt} from 'react-icons/fa';
+import {GoTrashcan} from "react-icons/go";
+import {AiFillEye} from "react-icons/ai";
+
+const pages = ['Create Order', 'Logout'];
+const settings = [''];
 
 
 const Orders = () => {
@@ -56,18 +60,43 @@ const Orders = () => {
       setAnchorElUser(null);
     };     
 
-    const handleDetails = () => {
-    };  
-    
-    const handleUpdate = () => {
+    const handleDetails = (e) => {
+      let orderID = e.target.getAttribute('orderID');
+      let customerId = e.target.getAttribute('customerId');
+      let productId   =  e.target.getAttribute('productId');
+
+      window.location = `/read/${orderID}/${customerId}/${productId}`;
 
     };  
+
+    const handleMenu = (event) =>
+	  {
+		console.log(event.target.getAttribute('name'));
+		if (event.currentTarget.name === "Create Order"){
+		  const url = "/add";
+		  window.location=url;}else{
+        window.location = "/";
+      }
+	  };  
     
-    const handleDelete = (e) => {
+    const handleUpdate = async(e) => {
+      let orderID = e.target.getAttribute('orderID');
+      let customerId = e.target.getAttribute('customerId');
+      let productId   =  e.target.getAttribute('productId');
+
+      window.location = `/update/${orderID}/${customerId}/${productId}`;
+
+    };  
+ 
+    
+    const handleDelete = async (e) => {
+
         let orderID = e.target.getAttribute('orderID');
         let customerId = e.target.getAttribute('customerId');
-     axios.delete(`http://localhost:8800/deleteOrder/${orderID}/${customerId}`);
-     window.location.reload();
+        let productId   =  e.target.getAttribute('productId');
+         await axios.delete(`http://localhost:8800/deleteOrder/${orderID}/${customerId}/${productId}`);
+    //  axios.await(`http://localhost:8800/deleteOrder/${orderID}/${customerId}/${productId}`);
+     window.location = "/orders";
     };        
  
 
@@ -89,7 +118,7 @@ const Orders = () => {
 		const { data } = props;
 
 			return (
-					<TableContainer component={Paper}>
+					<TableContainer component={Paper} sx={{padding: 3 , MarginOutlined:"black"}}>
 					<Table sx={{ minWidth: 650 }} aria-label="simple table">
 						<TableHead>
 						<TableRow>
@@ -97,7 +126,9 @@ const Orders = () => {
 							<TableCell align="left">Order Date</TableCell>
 							<TableCell align="left">Customer Id</TableCell>
 							<TableCell align="left">Customer Name</TableCell>
+
                             <TableCell align="left">Zip Code</TableCell>
+                            <TableCell align="left">Product Id</TableCell>
                             <TableCell align="left">Product Name</TableCell>
                             <TableCell align="left">Category</TableCell>
                             <TableCell align="left">Shipping Class</TableCell>
@@ -119,14 +150,16 @@ const Orders = () => {
 							<TableCell align="left">{data.customer_id}</TableCell>
 							<TableCell align="left">{data.customer_name}</TableCell>
                             <TableCell align="left">{data.zip_code}</TableCell>
+                            <TableCell align="left">{data.product_id}</TableCell>
                             <TableCell align="left">{data.product_name}</TableCell>
                             <TableCell align="left">{data.category}</TableCell>
                             <TableCell align="left">{data.shipping_class}</TableCell>
                             <TableCell align="left">{data.shipping_date}</TableCell>
                             <TableCell align="left">{data.order_status}</TableCell>
-							<TableCell align="left"><Button variant="contained" color="primary" type="button" value ="View"   onClick={handleDetails} name = {[data.order_id, data.customer_id]}  orderId = {data.order_id} customerId = {data.customer_id}>Read</Button>
-											<Button  variant="contained" color="primary" type="button" value= "Update" onClick={handleUpdate} name = {[data.order_id, data.customer_id]}  orderId = {data.order_id} customerId = {data.customer_id} >Update</Button>
-                                            <Button   variant="contained" color="primary" type="button" value= "Delete" onClick={handleDelete}  name = {[data.order_id, data.customer_id]}  orderId = {data.order_id} customerId = {data.customer_id} >Delete</Button>
+							<TableCell align="left">
+                      <Button sx={{m: 1}} style = {StyleSheet.Button}  size = "small" variant="contained" color="primary" type="button" value ="View"   onClick={handleDetails}  orderId = {data.order_id} customerId = {data.customer_id} productId = {data.product_id}><AiFillEye/></Button>
+											<Button  sx={{m: 1}} size = "small"   variant="contained" color="primary" type="button" value= "Update" onClick={handleUpdate}  orderId = {data.order_id} customerId = {data.customer_id} productId = {data.product_id} ><FaPencilAlt/></Button>
+                      <Button  sx={{m: 1}}  size = "small"   variant="contained" color="primary" type="button" value= "Delete" onClick={handleDelete}  orderId = {data.order_id} customerId = {data.customer_id} productId = {data.product_id}><GoTrashcan/></Button>
                                             </TableCell>
 							</TableRow>
 						))}
@@ -168,7 +201,8 @@ const Orders = () => {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={handleMenu}
+                name = {page}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 {page}
@@ -209,11 +243,7 @@ const Orders = () => {
       </Container>
     </AppBar>
     {orders && <SearchResult data={orders} />}
-        <button>
-            <Link to="/add">Add new order</Link>
-        </button>
         </div>
-
   )
 }
 
